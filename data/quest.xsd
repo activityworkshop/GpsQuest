@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Quest" type="QuestType"/>
+  <xs:complexType name="DescriptionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="lang" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="VariableType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="id" use="required"/>
+        <xs:attribute type="xs:string" name="value" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="VariablesType">
+    <xs:sequence>
+      <xs:element type="VariableType" name="Variable" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="StartSceneType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="id"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="HeadType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="Name"/>
+      <xs:element type="xs:string" name="Id"/>
+      <xs:element type="DescriptionType" name="Description" maxOccurs="unbounded" minOccurs="1"/>
+      <xs:element type="xs:string" name="Author"/>
+      <xs:element type="VariablesType" name="Variables"/>
+      <xs:element type="xs:string" name="Timers"/>
+      <xs:element type="StartSceneType" name="StartScene"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PointType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="id" use="required"/>
+        <xs:attribute type="xs:string" name="lat" use="required"/>
+        <xs:attribute type="xs:string" name="lon" use="required"/>
+        <xs:attribute type="xs:string" name="radius" use="required"/>
+        <xs:attribute type="xs:string" name="enter"/>
+        <xs:attribute type="xs:string" name="exit"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="ZonesType">
+    <xs:sequence>
+      <xs:element type="PointType" name="Point" maxOccurs="unbounded" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ConditionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="var" use="required"/>
+        <xs:attribute type="xs:string" name="value" use="required"/>
+        <xs:attribute type="xs:string" name="comparison" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="GoToSceneType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="id" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="ActionType">
+    <xs:sequence>
+      <xs:element type="SetVariableType" name="SetVariable" minOccurs="0"/>
+      <xs:element type="GoToSceneType" name="GoToScene"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TriggerType">
+    <xs:sequence>
+      <xs:element type="ConditionType" name="Condition" minOccurs="0"/>
+      <xs:element type="ActionType" name="Action"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="id" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="SetVariableType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="var" use="required"/>
+        <xs:attribute type="xs:string" name="value" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="TriggersType">
+    <xs:sequence>
+      <xs:element type="TriggerType" name="Trigger" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SceneType" mixed="true">
+    <xs:sequence>
+      <xs:element name="Text" type="xs:string" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="xs:string" name="Finish" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="id" use="required"/>
+    <xs:attribute type="xs:string" name="lang" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="ScenesType">
+    <xs:sequence>
+      <xs:element type="SceneType" name="Scene" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="QuestType">
+    <xs:sequence>
+      <xs:element type="HeadType" name="Head"/>
+      <xs:element type="ZonesType" name="Zones"/>
+      <xs:element type="TriggersType" name="Triggers"/>
+      <xs:element type="ScenesType" name="Scenes"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
