@@ -148,8 +148,4 @@ public class Quest {
     public void addScene(Scene scene) {
         scenes.put(scene.getId(), scene);
     }
-
-    public boolean hasScene(String id) {
-        return scenes.containsKey(id);
-    }
 }

@@ -1,7 +1,5 @@
 package tim.quest.xml;
 
-import tim.quest.model.SceneObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
