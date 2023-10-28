@@ -2,6 +2,7 @@ package tim.quest.load;
 
 import tim.quest.Finding;
 import tim.quest.model.*;
+import tim.quest.xml.SceneContents;
 import tim.quest.xml.XmlProperties;
 import tim.quest.xml.XmlQuestModel;
 
@@ -76,7 +77,7 @@ public class QuestBuilder {
         HashMap<String, String> descriptions = model.getMainProperties().getAllProperties(XmlQuestModel.TAG_DESCRIPTION);
         for (String key : descriptions.keySet()) {
             final String description = descriptions.get(key);
-            if (!key.isEmpty() && !description.isEmpty()) {
+            if (!description.isEmpty()) {
                 quest.addDescription(key, description);
             }
         }
@@ -143,8 +144,8 @@ public class QuestBuilder {
                 else {
                     Point point = new Point(lat, lon);
                     if (point.isValid()) {
-                    zoneDef = new PointZone(zoneId, enterTriggers, exitTriggers, point, radius);
-                }
+                        zoneDef = new PointZone(zoneId, enterTriggers, exitTriggers, point, radius);
+                    }
                     else {
                         addError("Zone '" + zoneId + "' has improperly defined point coordinates");
                     }
@@ -216,16 +217,22 @@ public class QuestBuilder {
     }
 
     private void setScenes(Quest quest) {
-        for (XmlProperties scene : model.getScenes()) {
-            Scene sceneDef = new Scene(scene.getProperty(XmlQuestModel.TAG_ID));
-            // TODO: Extract more details from the Scene
-            if (quest.hasScene(sceneDef.getId())) {
-                addError("Scene id '" + sceneDef.getId() + "' is defined multiple times");
+        for (SceneContents scene : model.getScenes()) {
+            Scene existingSceneDef = quest.getScene(scene.getId());
+            if (existingSceneDef != null) {
+                if (existingSceneDef.getLanguages().contains(scene.getLanguage())) {
+                    addError("Scene id '" + scene.getId() + "' is defined multiple times for language '" + scene.getLanguage() + "'");
+                }
+                else {
+                    existingSceneDef.addContent(scene.getLanguage(), scene.getContents());
+                }
             }
             else {
-            quest.addScene(sceneDef);
+                Scene sceneDef = new Scene(scene.getId());
+                sceneDef.addContent(scene.getLanguage(), scene.getContents());
+                quest.addScene(sceneDef);
+            }
         }
-    }
     }
 
     private void setStartScene(Quest quest) {

@@ -51,6 +51,10 @@ public class Trigger extends QuestObject implements TriggerInterface {
         return timerIds;
     }
 
+    public List<Timer> getTimers() {
+        return timers;
+    }
+
     public List<Condition> getConditions() {
         return conditions;
     }

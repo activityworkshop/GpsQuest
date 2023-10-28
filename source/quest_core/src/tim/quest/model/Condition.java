@@ -19,4 +19,8 @@ public class Condition {
     public String getVariableName() {
         return variableId;
     }
+
+    public String getCheckString() {
+        return operator.toString() + " " + value;
+    }
 }

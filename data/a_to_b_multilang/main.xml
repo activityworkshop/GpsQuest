@@ -1,0 +1,92 @@
+<Quest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../quest.xsd">
+    <Head>
+        <Name>From A to B</Name>
+        <Id/>
+        <Description lang="en">Simple example quest to go from point A to point B (with multiple languages)</Description>
+        <Description lang="de">Einfaches Beispiel Quest um von A zum B zu gelangen (mit mehreren Sprachen)</Description>
+        <Author>ActivityWorkshop</Author>
+        <Variables>
+            <Variable id="visitedA" value="0"/>
+        </Variables>
+        <Timers/>
+        <StartScene id="Intro"/>
+    </Head>
+    <Zones>
+        <Point id="PointA" lat="0.01" lon="0.0" radius="50" enter="enterA1,enterA2" exit="exitA"/>
+        <Point id="PointB" lat="0.03" lon="0.2" radius="20" enter="enterB1,enterB2"/>
+    </Zones>
+    <Triggers>
+        <Trigger id="enterA1">
+            <Condition var="visitedA" value="1" comparison="eq"/>
+            <Action>
+                <GoToScene id="RevisitedStart"/>
+            </Action>
+        </Trigger>
+        <Trigger id="enterA2">
+            <Condition var="visitedA" value="0" comparison="eq"/>
+            <Action>
+                <SetVariable var="visitedA" value="1"/>
+                <GoToScene id="ReachedA"/>
+            </Action>
+        </Trigger>
+        <Trigger id="exitA">
+            <Action>
+                <SetVariable var="visitedA" value="1"/>
+                <GoToScene id="Started"/>
+            </Action>
+        </Trigger>
+        <Trigger id="enterB1">
+            <Condition var="visitedA" value="0" comparison="eq"/>
+            <Action>
+                <GoToScene id="HaventVisitedStart"/>
+            </Action>
+        </Trigger>
+        <Trigger id="enterB2">
+            <Condition var="visitedA" value="1" comparison="eq"/>
+            <Action>
+                <GoToScene id="Finish"/>
+            </Action>
+        </Trigger>
+    </Triggers>
+    <Scenes>
+    	<Scene id="Intro" lang="en">
+            <Text>Here is the introduction</Text>
+        </Scene>
+        <Scene id="Intro" lang="de">
+            <Text>Hier kommt die Einführung</Text>
+        </Scene>
+    	<Scene id="ReachedA" lang="en">
+            <Text>You have now reached the first goal, now go to the next one</Text>
+        </Scene>
+        <Scene id="ReachedA" lang="de">
+            <Text>Das erste Ziel ist erreicht, jetzt kommt das zweite</Text>
+        </Scene>
+    	<Scene id="RevisitedStart" lang="en">
+            <Text>No, this is the first goal, you've already been here, go to the end!</Text>
+        </Scene>
+        <Scene id="RevisitedStart" lang="de">
+            <Text>Nein, das ist falsch, hier waren wir schon. Auf zum zweiten!</Text>
+        </Scene>
+    	<Scene id="Started" lang="en">
+            <Text>On our way!</Text>
+        </Scene>
+        <Scene id="Started" lang="de">
+            <Text>Jetzt gehts los!</Text>
+        </Scene>
+    	<Scene id="HaventVisitedStart" lang="en">
+            <Text>No, that's not right, you haven't been to the start point yet!</Text>
+        </Scene>
+        <Scene id="HaventVisitedStart" lang="de">
+            <Text>Direkt zum Endziel geht nicht, ohne das erste zu besuchen!</Text>
+        </Scene>
+    	<Scene id="Finish" lang="en">
+            <Text>Congratulations!</Text>
+    		<Finish/>
+    	</Scene>
+        <Scene id="Finish" lang="de">
+            <Text>Gratulation!</Text>
+            <Finish/>
+        </Scene>
+    </Scenes>
+</Quest>

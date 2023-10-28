@@ -14,6 +14,7 @@ public class Quest {
     private final HashMap<String, Trigger> triggers = new HashMap<>();
     private final HashMap<String, Scene> scenes = new HashMap<>();
     private final ArrayList<String> resourcePaths = new ArrayList<>();
+    private Scene startScene = null;
 
 
     public void setName(String name) {
@@ -95,6 +96,14 @@ public class Quest {
         return variables.containsKey(id);
     }
 
+    public Collection<String> getVariableNames() {
+        return variables.keySet();
+    }
+
+    public String getVariableValue(String name) {
+        return variables.getValue(name);
+    }
+
     public void addTimer(String id, int period, String trigger, boolean repeating) {
         if (id != null && !id.equals("") && period > 0) {
             timers.put(id, new Timer(id, period, trigger, repeating));
@@ -106,8 +115,15 @@ public class Quest {
     }
 
     public void setStartScene(Scene startScene) {
-        // TODO: Can I store a single object if the scene has different languages and I don't know the language yet?
-        // or does each Scene hold multiple languages?
+        this.startScene = startScene;
+    }
+
+    public Scene getStartScene() {
+        return startScene;
+    }
+
+    public Collection<Scene> getScenes() {
+        return scenes.values();
     }
 
     public void addZone(Zone zone) {

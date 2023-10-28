@@ -1,5 +1,7 @@
 package tim.quest.xml;
 
+import tim.quest.model.SceneObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +34,7 @@ public class XmlQuestModel {
     private final ArrayList<XmlProperties> timers = new ArrayList<>();
     private final ArrayList<XmlProperties> zones = new ArrayList<>();
     private final ArrayList<XmlProperties> triggers = new ArrayList<>();
-    // TODO: How to hold scenes properly?
-    private final ArrayList<XmlProperties> scenes = new ArrayList<>();
+    private final ArrayList<SceneContents> scenes = new ArrayList<>();
 
 
     public XmlProperties getMainProperties() {
@@ -77,7 +78,7 @@ public class XmlQuestModel {
         triggers.add(trigger);
     }
 
-    public void addScene(XmlProperties scene) {
+    public void addScene(SceneContents scene) {
         scenes.add(scene);
     }
 
@@ -97,7 +98,7 @@ public class XmlQuestModel {
         return triggers;
     }
 
-    public List<XmlProperties> getScenes() {
+    public List<SceneContents> getScenes() {
         return scenes;
     }
 }

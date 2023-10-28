@@ -1,0 +1,62 @@
+<Quest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../quest.xsd">
+    <Head>
+        <Name>From A to B</Name>
+        <Id/>
+        <Description>Simple example quest to go from point A to point B</Description>
+        <Author>ActivityWorkshop</Author>
+        <Variables>
+            <Variable id="visitedA" value="0"/>
+        </Variables>
+        <Timers/>
+        <StartScene id="Intro"/>
+    </Head>
+    <Zones>
+        <Point id="PointA" lat="0.01" lon="0.0" radius="50" enter="enterA1,enterA2" exit="exitA"/>
+        <Point id="PointB" lat="0.03" lon="0.2" radius="20" enter="enterB1,enterB2"/>
+    </Zones>
+    <Triggers>
+        <Trigger id="enterA1">
+            <Condition var="visitedA" value="1" comparison="eq"/>
+            <Action>
+                <GoToScene id="RevisitedStart"/>
+            </Action>
+        </Trigger>
+        <Trigger id="enterA2">
+            <Condition var="visitedA" value="0" comparison="eq"/>
+            <Action>
+                <SetVariable var="visitedA" value="1"/>
+                <GoToScene id="ReachedA"/>
+            </Action>
+        </Trigger>
+        <Trigger id="exitA">
+            <Action>
+                <SetVariable var="visitedA" value="1"/>
+                <GoToScene id="Started"/>
+            </Action>
+        </Trigger>
+        <Trigger id="enterB1">
+            <Condition var="visitedA" value="0" comparison="eq"/>
+            <Action>
+                <GoToScene id="HaventVisitedStart"/>
+            </Action>
+        </Trigger>
+        <Trigger id="enterB2">
+            <Condition var="visitedA" value="1" comparison="eq"/>
+            <Action>
+                <GoToScene id="Finish"/>
+            </Action>
+        </Trigger>
+    </Triggers>
+    <Scenes>
+    	<Scene id="Intro"/>
+    	<Scene id="ReachedA"/>
+    	<Scene id="RevisitedStart"/>
+    	<Scene id="Started"/>
+    	<Scene id="HaventVisitedStart"/>
+    	<Scene id="Finish">
+            <Text>Congratulations</Text>
+    		<Finish/>
+    	</Scene>
+    </Scenes>
+</Quest>

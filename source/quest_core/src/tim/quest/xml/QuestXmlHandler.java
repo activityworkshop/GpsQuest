@@ -3,6 +3,7 @@ package tim.quest.xml;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import tim.quest.model.TextItem;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -16,7 +17,7 @@ public class QuestXmlHandler extends DefaultHandler {
     private String currentText = null;
     private XmlProperties currentPolygon = null;
     private XmlProperties currentTrigger = null;
-    private XmlProperties currentScene = null;
+    private SceneContents currentScene = null;
 
 
     public void parseXmlStream(InputStream inStream) throws ParseException {
@@ -83,10 +84,8 @@ public class QuestXmlHandler extends DefaultHandler {
             currentTrigger.setIndexed(XmlQuestModel.TAG_TRIGGER_SETVALUE, variableValue);
         }
         else if (qName.equals("Scene")) {
-            currentScene = new XmlProperties();
-            currentScene.set(XmlQuestModel.TAG_ID, attributes.getValue("id"));
+            currentScene = new SceneContents(attributes.getValue("id"), attributes.getValue("lang"));
         }
-        // TODO: Extract more scene details, make language-specific
         currentText = "";
         super.startElement(uri, localName, qName, attributes);
     }
@@ -100,7 +99,7 @@ public class QuestXmlHandler extends DefaultHandler {
             model.getMainProperties().set(XmlQuestModel.TAG_AUTHOR, currentText);
         }
         else if (qName.equals("Description")) {
-            model.getMainProperties().set(XmlQuestModel.TAG_DESCRIPTION, language, currentText);
+            model.getMainProperties().set(XmlQuestModel.TAG_DESCRIPTION, language == null ? "" : language, currentText);
         }
         else if (qName.equals("Polygon") && currentPolygon != null) {
             model.addPolygonZone(currentPolygon);
@@ -113,6 +112,9 @@ public class QuestXmlHandler extends DefaultHandler {
         else if (qName.equals("Scene") && currentScene != null) {
             model.addScene(currentScene);
             currentScene = null;
+        }
+        else if (qName.equals("Text") && currentScene != null) {
+            currentScene.addObject(new TextItem(currentText));
         }
         language = null;
         super.endElement(uri, localName, qName);
