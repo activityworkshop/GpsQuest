@@ -1,4 +1,7 @@
-package tim.quest.simulator;
+package tim.quest.simulator.gui;
+
+import tim.quest.simulator.I18nTexts;
+import tim.quest.simulator.LanguageAware;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +12,7 @@ public class LogPanel extends JPanel implements LanguageAware {
 
     public LogPanel(I18nTexts texts) {
         setLayout(new BorderLayout(5, 5));
+        GuiTricks.makeFontBigger(topLabel);
         add(topLabel, BorderLayout.NORTH);
         add(new JScrollPane(textArea), BorderLayout.CENTER);
         setLanguage(texts);

@@ -1,6 +1,6 @@
 package tim.quest.load;
 
-import tim.quest.Finding;
+import tim.quest.Findings;
 import tim.quest.model.Quest;
 import tim.quest.model.QuestFileVisitor;
 import tim.quest.xml.ParseException;
@@ -11,15 +11,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class QuestLoader {
 
     /** Create a Quest object from the specified directory or zip file */
-    public static Quest fromFile(String filename, List<Finding> findings) throws QuestFileException {
-        File file = new File(filename);
+    public static Quest fromFile(File file, Findings findings) throws QuestFileException {
         if (!file.exists() || !file.canRead()) {
             throw new QuestFileException("Cannot read file '" + file.getAbsolutePath() + "'");
         }
@@ -27,12 +25,12 @@ public class QuestLoader {
             return fromZipFile(file, findings);
         }
         if (file.isDirectory()) {
-            return fromDirectory(filename, findings);
+            return fromDirectory(file.getAbsolutePath(), findings);
         }
         return null;
     }
 
-    private static Quest fromZipFile(File file, List<Finding> findings) throws QuestFileException {
+    private static Quest fromZipFile(File file, Findings findings) throws QuestFileException {
         Quest quest = null;
         try (ZipFile zf = new ZipFile(file)) {
             Enumeration<? extends ZipEntry> entries = zf.entries();
@@ -50,7 +48,7 @@ public class QuestLoader {
                         quest = new QuestBuilder(xmlHandler.getModel(), findings).buildQuest();
                     }
                     else if (zipEntry.getName().endsWith(".xml")) {
-                        findings.add(new Finding(Finding.Severity.WARNING, "Xml file '" + zipEntry.getName() + "' ignored"));
+                        findings.addWarning("Xml file '" + zipEntry.getName() + "' ignored");
                     }
                     else if (zipEntry.getName().startsWith("res/")) {
                         System.out.println("Found resource: " + zipEntry.getName().substring(4));
@@ -69,7 +67,7 @@ public class QuestLoader {
         return quest;
     }
 
-    private static Quest fromDirectory(String directory, List<Finding> findings) throws QuestFileException {
+    private static Quest fromDirectory(String directory, Findings findings) throws QuestFileException {
         // Walk through file tree, do same parsing as above
         QuestFileVisitor visitor = new QuestFileVisitor(findings);
         try {

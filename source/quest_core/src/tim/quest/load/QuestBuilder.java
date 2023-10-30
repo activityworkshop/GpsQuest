@@ -1,21 +1,20 @@
 package tim.quest.load;
 
-import tim.quest.Finding;
+import tim.quest.Findings;
 import tim.quest.model.*;
 import tim.quest.xml.SceneContents;
 import tim.quest.xml.XmlProperties;
 import tim.quest.xml.XmlQuestModel;
 
 import java.util.HashMap;
-import java.util.List;
 
 /** Responsible for building the Quest object from the String-based Xml model */
 public class QuestBuilder {
     private final XmlQuestModel model;
-    private final List<Finding> findings;
+    private final Findings findings;
 
 
-    public QuestBuilder(XmlQuestModel model, List<Finding> findings) {
+    public QuestBuilder(XmlQuestModel model, Findings findings) {
         this.model = model;
         this.findings = findings;
     }
@@ -333,7 +332,7 @@ public class QuestBuilder {
 
     private void addError(String message) {
         if (findings != null) {
-            findings.add(new Finding(Finding.Severity.ERROR, message));
+            findings.addError(message);
         }
     }
 

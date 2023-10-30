@@ -1,8 +1,8 @@
 package tim.quest.model;
 
-import tim.quest.Finding;
-import tim.quest.xml.ParseException;
+import tim.quest.Findings;
 import tim.quest.load.QuestBuilder;
+import tim.quest.xml.ParseException;
 import tim.quest.xml.QuestXmlHandler;
 
 import java.io.FileInputStream;
@@ -12,14 +12,13 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.List;
 
 public class QuestFileVisitor extends SimpleFileVisitor<Path> {
-    private final List<Finding> findings;
+    private final Findings findings;
     private final ArrayList<String> resourcePaths = new ArrayList<>();
     private Quest quest = null;
 
-    public QuestFileVisitor(List<Finding> findings) {
+    public QuestFileVisitor(Findings findings) {
         this.findings = findings;
     }
 
@@ -29,7 +28,7 @@ public class QuestFileVisitor extends SimpleFileVisitor<Path> {
         final String filename = file.getFileName().toString();
         if (filename.equals("main.xml")) {
             if (quest != null) {
-                findings.add(new Finding(Finding.Severity.ERROR, "Multiple files with name 'main.xml' found"));
+                findings.addError("Multiple files with name 'main.xml' found");
             }
             QuestXmlHandler xmlHandler = new QuestXmlHandler();
             try {
@@ -40,7 +39,7 @@ public class QuestFileVisitor extends SimpleFileVisitor<Path> {
             quest = new QuestBuilder(xmlHandler.getModel(), findings).buildQuest();
         }
         else if (filename.endsWith(".xml")) {
-            findings.add(new Finding(Finding.Severity.WARNING, "Xml file '" + filename + "' found and ignored"));
+            findings.addWarning("Xml file '" + filename + "' found and ignored");
         }
         // TODO: Also deal with resource files, add to list
         return super.visitFile(file, attrs);

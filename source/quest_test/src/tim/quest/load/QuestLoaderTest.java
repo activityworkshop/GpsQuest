@@ -2,37 +2,41 @@ package tim.quest.load;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import tim.quest.Finding;
+import tim.quest.Findings;
 import tim.quest.model.Quest;
 
-import java.util.ArrayList;
+import java.io.File;
 
 public class QuestLoaderTest {
     @Test
     public void testLoadTextNotZip() {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/textfile.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("textfile.quest");
         Assertions.assertThrows(QuestFileException.class, () -> QuestLoader.fromFile(questFile, findings));
+    }
+
+    private File getDataFile(String filename) {
+        return new File(getClass().getResource("data/" + filename).getPath());
     }
 
     @Test
     public void testLoadBinaryNotZip() {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/pngfile.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("pngfile.quest");
         Assertions.assertThrows(QuestFileException.class, () -> QuestLoader.fromFile(questFile, findings));
     }
 
     @Test
     public void testLoadZipWithoutXml() {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/zippedtext.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("zippedtext.quest");
         Assertions.assertThrows(QuestFileException.class, () -> QuestLoader.fromFile(questFile, findings));
     }
 
     @Test
     public void testLoadEmptyXml() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/emptyxml.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("emptyxml.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertEquals("", quest.getName());
@@ -41,8 +45,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testLoadStartSceneNotFound() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/scenenotfound.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("scenenotfound.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertEquals("Start Scene not found", quest.getName());
@@ -51,29 +55,29 @@ public class QuestLoaderTest {
 
     @Test
     public void testLoadStartSceneFound() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/scenefound.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("scenefound.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertEquals("Start Scene found", quest.getName());
-        Assertions.assertTrue(FindingsChecks.allOk(findings));
+        Assertions.assertTrue(findings.allOk());
     }
 
     @Test
     public void testMultipleXmlInZip() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/multiplexml.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("multiplexml.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertEquals("Start Scene found", quest.getName());
-        Assertions.assertFalse(FindingsChecks.containsError(findings));
+        Assertions.assertFalse(findings.hasErrors());
         Assertions.assertTrue(FindingsChecks.containsWarning(findings, "another.xml"));
     }
 
     @Test
     public void testDuplicateVariables() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/duplicatevariables.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("duplicatevariables.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "defined multiple times"));
@@ -81,8 +85,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testDuplicateTriggers() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/duplicatetriggers.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("duplicatetriggers.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "defined multiple times"));
@@ -90,8 +94,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testDuplicateZones() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/duplicatezones.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("duplicatezones.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "defined multiple times"));
@@ -99,8 +103,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testNoZonesDefined() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/nozones.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("nozones.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "No zones defined"));
@@ -108,8 +112,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testZonesUsingUndefinedTrigger() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/zonetriggernotfound.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("zonetriggernotfound.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "refers to trigger 'T1'"));
@@ -119,8 +123,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testPointZonesWithWrongRadius() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/pointwithwrongradius.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("pointwithwrongradius.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "Zone 'P1' has improperly defined point or radius"));
@@ -130,8 +134,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testPolygonsWithTooFewNodes() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/polygonswithfewnodes.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("polygonswithfewnodes.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "Zone 'P1' has improperly defined nodes"));
@@ -141,8 +145,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testInvalidCoordinates() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/pointswithwrongcoordinates.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("pointswithwrongcoordinates.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "Zone 'P1' has improperly defined point coordinates"));
@@ -151,8 +155,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testDuplicateTrigger() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/duplicatetrigger.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("duplicatetrigger.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "Trigger 'T1' is defined multiple times"));
@@ -160,8 +164,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testTriggerUReadingWrongVariable() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/triggercallswrongvariable.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("triggercallswrongvariable.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "Trigger 'T1' refers to variable 'hasKey' which cannot be found"));
@@ -169,8 +173,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testTriggerSettingWrongVariable() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/triggersetswrongvariable.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("triggersetswrongvariable.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "Trigger 'T1' modifies variable 'defeatedDragon' which cannot be found"));
@@ -178,8 +182,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testTriggerStartsWrongTimer() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/triggerstartswrongtimer.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("triggerstartswrongtimer.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "Trigger 'T1' refers to timer 'stormcoming' which cannot be found"));
@@ -187,8 +191,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testTriggerGoesToWrongScene() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/triggergoestowrongscene.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("triggergoestowrongscene.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "Trigger 'T1' calls scene 'planelanded' but this scene was not found"));
@@ -196,8 +200,8 @@ public class QuestLoaderTest {
 
     @Test
     public void testDuplicateScenes() throws QuestFileException {
-        ArrayList<Finding> findings = new ArrayList<>();
-        String questFile = getClass().getResource("data/duplicatescenes.quest").getPath();
+        Findings findings = new Findings();
+        File questFile = getDataFile("duplicatescenes.quest");
         Quest quest = QuestLoader.fromFile(questFile, findings);
         Assertions.assertNotNull(quest);
         Assertions.assertTrue(FindingsChecks.containsError(findings, "Scene id 'Intro' is defined multiple times"));

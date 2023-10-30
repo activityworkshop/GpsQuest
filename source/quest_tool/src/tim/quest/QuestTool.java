@@ -5,6 +5,7 @@ import tim.quest.load.QuestLoader;
 import tim.quest.model.Timer;
 import tim.quest.model.*;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -25,40 +26,36 @@ public class QuestTool {
 
     private static void validateQuestFile(String filename) {
         System.out.println("Validating: '" + filename + "'");
-        ArrayList<Finding> findings = new ArrayList<>();
+        Findings findings = new Findings();
         try {
-            Quest quest = QuestLoader.fromFile(filename, findings);
+            Quest quest = QuestLoader.fromFile(new File(filename), findings);
             if (quest == null) {
-                findings.add(new Finding(Finding.Severity.ERROR, "Quest could not be created"));
+                findings.addError("Quest could not be created");
             }
             else {
                 doFurtherValidation(quest, findings);
-                findings.add(new Finding(Finding.Severity.INFO, "Quest is '" + quest.getName() + "' by '" + quest.getAuthor() + "'"));
+                findings.addInfo("Quest is '" + quest.getName() + "' by '" + quest.getAuthor() + "'");
                 HashMap<String, String> descriptions = quest.getDescriptions();
                 for (String lang : descriptions.keySet()) {
-                    findings.add(new Finding(Finding.Severity.INFO, "Description for language '" + lang + "' is '" + descriptions.get(lang) + "'"));
+                    findings.addInfo("Description for language '" + lang + "' is '" + descriptions.get(lang) + "'");
                 }
-                findings.add(new Finding(Finding.Severity.INFO, "Quest contains " + quest.getNumVariables() + " variables"));
-                findings.add(new Finding(Finding.Severity.INFO, "Quest contains " + quest.getNumTimers() + " timers"));
-                findings.add(new Finding(Finding.Severity.INFO, "Quest contains " + quest.getZones().size() + " zones"));
-                findings.add(new Finding(Finding.Severity.INFO, "Quest contains " + quest.getNumTriggers() + " triggers"));
-                findings.add(new Finding(Finding.Severity.INFO, "Quest contains " + quest.getNumScenes() + " scenes"));
+                findings.addInfo("Quest contains " + quest.getNumVariables() + " variables");
+                findings.addInfo("Quest contains " + quest.getNumTimers() + " timers");
+                findings.addInfo("Quest contains " + quest.getZones().size() + " zones");
+                findings.addInfo("Quest contains " + quest.getNumTriggers() + " triggers");
+                findings.addInfo("Quest contains " + quest.getNumScenes() + " scenes");
             }
         } catch (QuestFileException e) {
-            findings.add(new Finding(Finding.Severity.ERROR, e.getMessage()));
+            findings.addError(e.getMessage());
         }
 
-        boolean allOk = true;
-        boolean hasErrors = false;
         for (Finding finding : findings) {
             System.out.println(finding.getTypeDesc() + ": " + finding.getText());
-            allOk = allOk && finding.getSeverity() == Finding.Severity.INFO;
-            hasErrors = hasErrors || finding.getSeverity() == Finding.Severity.ERROR;
         }
-        if (allOk) {
+        if (findings.allOk()) {
             System.out.println("OK");
         }
-        else if (hasErrors) {
+        else if (findings.hasErrors()) {
             System.out.println("Finished with error(s)");
         }
         else {
@@ -67,7 +64,7 @@ public class QuestTool {
     }
 
     /** Do some specific validation here which is not required at runtime, just for validation phase */
-    private static void doFurtherValidation(Quest quest, List<Finding> findings) {
+    private static void doFurtherValidation(Quest quest, Findings findings) {
         checkForUnusedVariables(quest, findings);
         for (Trigger trigger : quest.getTriggers()) {
             checkConditionConsistency(trigger, findings);
@@ -81,7 +78,7 @@ public class QuestTool {
         // prompt with mismatching buttons and actions => error
     }
 
-    private static void checkForUnusedVariables(Quest quest, List<Finding> findings) {
+    private static void checkForUnusedVariables(Quest quest, Findings findings) {
         HashSet<String> readVariables = new HashSet<>();
         HashSet<String> writeVariables = new HashSet<>();
         for (Trigger trigger : quest.getTriggers()) {
@@ -94,19 +91,19 @@ public class QuestTool {
             boolean isRead = readVariables.contains(definedVariable);
             boolean isWritten = writeVariables.contains(definedVariable);
             if (!isRead && !isWritten) {
-                findings.add(new Finding(Finding.Severity.WARNING, "Variable '" + definedVariable + "' is never used"));
+                findings.addWarning("Variable '" + definedVariable + "' is never used");
             }
             else if (!isRead) {
-                findings.add(new Finding(Finding.Severity.WARNING, "Variable '" + definedVariable + "' is written but never read"));
+                findings.addWarning("Variable '" + definedVariable + "' is written but never read");
             }
             else if (!isWritten) {
-                findings.add(new Finding(Finding.Severity.WARNING, "Variable '" + definedVariable
-                        + "' is read but the value is always " + quest.getVariableValue(definedVariable)));
+                findings.addWarning("Variable '" + definedVariable
+                        + "' is read but the value is always " + quest.getVariableValue(definedVariable));
             }
         }
     }
 
-    private static void checkForUnusedTimers(Quest quest, List<Finding> findings) {
+    private static void checkForUnusedTimers(Quest quest, Findings findings) {
         HashSet<String> usedTimers = new HashSet<>();
         for (Trigger trigger : quest.getTriggers()) {
             for (Timer timer : trigger.getTimers()) {
@@ -115,12 +112,12 @@ public class QuestTool {
         }
         for (Timer timer : quest.getTimers()) {
             if (!usedTimers.contains(timer.getId())) {
-                findings.add(new Finding(Finding.Severity.WARNING, "Timer '" + timer.getId() + "' is never used"));
+                findings.addWarning("Timer '" + timer.getId() + "' is never used");
             }
         }
     }
 
-    private static void checkForUnusedScenes(Quest quest, List<Finding> findings) {
+    private static void checkForUnusedScenes(Quest quest, Findings findings) {
         HashSet<String> usedScenes = new HashSet<>();
         usedScenes.add(quest.getStartScene().getId());
         for (Trigger trigger : quest.getTriggers()) {
@@ -128,12 +125,12 @@ public class QuestTool {
         }
         for (Scene scene : quest.getScenes()) {
             if (!usedScenes.contains(scene.getId())) {
-                findings.add(new Finding(Finding.Severity.WARNING, "Scene '" + scene.getId() + "' is never used"));
+                findings.addWarning("Scene '" + scene.getId() + "' is never used");
             }
         }
     }
 
-    private static void checkConditionConsistency(Trigger trigger, List<Finding> findings) {
+    private static void checkConditionConsistency(Trigger trigger, Findings findings) {
         HashMap<String, HashSet<String>> conditions = new HashMap<>();
         for (Condition condition : trigger.getConditions()) {
             String value = condition.getCheckString();
@@ -153,7 +150,7 @@ public class QuestTool {
     }
 
     /** Check whether the conditions of a trigger are internally consistent */
-    private static void checkConditionConsistency(String triggerName, String variableName, HashSet<String> conditions, List<Finding> findings) {
+    private static void checkConditionConsistency(String triggerName, String variableName, HashSet<String> conditions, Findings findings) {
         int numEquals = 0, numNotEquals = 0, numLessThan = 0, numGreaterThan = 0;
         for (String condition : conditions) {
             checkNumbersInCondition(triggerName, variableName, condition, findings);
@@ -174,23 +171,23 @@ public class QuestTool {
         }
         final int totalChecks = numEquals + numNotEquals + numLessThan + numGreaterThan;
         if (numEquals > 1) {
-            findings.add(new Finding(Finding.Severity.ERROR, "Trigger '" + triggerName + "' has inconsistent conditions on variable '" + variableName + "'"));
+            findings.addError("Trigger '" + triggerName + "' has inconsistent conditions on variable '" + variableName + "'");
         }
         else if (numEquals == 1 && totalChecks > 1) {
-            findings.add(new Finding(Finding.Severity.ERROR, "Trigger '" + triggerName + "' has inconsistent conditions on variable '" + variableName + "'"));
+            findings.addError("Trigger '" + triggerName + "' has inconsistent conditions on variable '" + variableName + "'");
         }
         else if (numGreaterThan > 1 || numLessThan > 1) {
-            findings.add(new Finding(Finding.Severity.ERROR, "Trigger '" + triggerName + "' has redundant conditions on variable '" + variableName + "'"));
+            findings.addError("Trigger '" + triggerName + "' has redundant conditions on variable '" + variableName + "'");
         }
         // TODO: Could potentially check for other inconsistencies here, like impossible combinations of lt and gt
     }
 
-    private static void checkNumbersInCondition(String triggerName, String variableName, String condition, List<Finding> findings) {
+    private static void checkNumbersInCondition(String triggerName, String variableName, String condition, Findings findings) {
         char operator = condition.charAt(0);
         if (operator == '<' || operator == '>') {
             String value = condition.substring(3);
             if (!isNumber(value)) {
-                findings.add(new Finding(Finding.Severity.ERROR, "Condition '" + triggerName + "' has an invalid numeric condition on variable '" + variableName + "'"));
+                findings.addError("Condition '" + triggerName + "' has an invalid numeric condition on variable '" + variableName + "'");
             }
         }
     }
@@ -209,7 +206,7 @@ public class QuestTool {
         }
     }
 
-    private static void checkForLanguageConsistency(Quest quest, List<Finding> findings) {
+    private static void checkForLanguageConsistency(Quest quest, Findings findings) {
         HashSet<String> incompleteLanguages = new HashSet<>();
         HashSet<String> allLanguages = new HashSet<>(quest.getDescriptions().keySet());
         for (Scene scene : quest.getScenes()) {
@@ -225,7 +222,7 @@ public class QuestTool {
         }
         // Give warnings for incomplete languages
         for (String language : incompleteLanguages) {
-            findings.add(new Finding(Finding.Severity.WARNING, "Language '" + language + "' is not complete"));
+            findings.addWarning("Language '" + language + "' is not complete");
         }
     }
 
