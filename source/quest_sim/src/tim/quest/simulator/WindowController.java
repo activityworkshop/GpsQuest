@@ -9,4 +9,7 @@ public interface WindowController {
     void clearLogPanel();
 
     void exitWindow();
+
+    void enterZone(String zoneId);
+    void exitZone(String zoneId);
 }

@@ -1,6 +1,7 @@
 package tim.quest.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Quest {
     private String name;
@@ -96,8 +97,8 @@ public class Quest {
         return variables.containsKey(id);
     }
 
-    public Collection<String> getVariableNames() {
-        return variables.keySet();
+    public List<String> getVariableNames() {
+        return variables.keySet().stream().sorted().collect(Collectors.toList());
     }
 
     public String getVariableValue(String name) {
@@ -147,5 +148,9 @@ public class Quest {
 
     public void addScene(Scene scene) {
         scenes.put(scene.getId(), scene);
+    }
+
+    public Collection<String> getZoneNames() {
+        return zones.stream().map(Zone::getId).sorted().collect(Collectors.toList());
     }
 }

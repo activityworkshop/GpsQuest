@@ -37,9 +37,10 @@ public class MainWindow implements WindowController {
         menuManager.setLanguage(i18n);
         infoPanel = new InfoPanel(i18n);
         // Two panels side by side
-        zonesPanel = new ZonesPanel(i18n);
+        zonesPanel = new ZonesPanel(i18n, this);
         variablesPanel = new VariablesPanel(i18n);
         JSplitPane eastWestSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, zonesPanel, variablesPanel);
+        eastWestSplit.setDividerLocation(0.5);
         eastWestSplit.setResizeWeight(0.5);
         // horizontal divider and log panel below
         logPanel = new LogPanel(i18n);
@@ -99,6 +100,8 @@ public class MainWindow implements WindowController {
                 Quest quest = QuestLoader.fromFile(fileChooser.getSelectedFile(), findings);
                 logPanel.log("Opened the Quest file '" + fileChooser.getSelectedFile().getAbsolutePath() + "'");
                 infoPanel.setQuest(quest);
+                variablesPanel.setQuest(quest);
+                zonesPanel.setQuest(quest);
                 menuManager.setQuest(quest);
                 redrawComponents();
             } catch (QuestFileException e) {
@@ -118,5 +121,13 @@ public class MainWindow implements WindowController {
     public void exitWindow() {
         // TODO: Check whether to save the current quest's progress or not (if Quest loaded and started)
         System.exit(0);
+    }
+
+    public void enterZone(String zoneId) {
+        logPanel.log("Entered the zone '" + zoneId + "'");
+    }
+
+    public void exitZone(String zoneId) {
+        logPanel.log("Exited the zone '" + zoneId + "'");
     }
 }
