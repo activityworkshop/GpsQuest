@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -31,6 +32,7 @@ public class MainWindow implements WindowController {
 
     public void launch(String language) {
         frame = new JFrame("Quest Simulator");
+        setIcon(frame, "quest-icon");
         i18n.setLanguage(language);
         JMenuBar menuBar = menuManager.getMenuBar();
         frame.setJMenuBar(menuBar);
@@ -62,6 +64,34 @@ public class MainWindow implements WindowController {
 
         // Ensure everything is updated when the language is changed
         addToI18nUpdate(menuManager, infoPanel, zonesPanel, variablesPanel, logPanel);
+    }
+
+    private void setIcon(JFrame frame, String iconName) {
+        try
+        {
+            ArrayList<Image> icons = new ArrayList<>();
+            String[] resolutions = {"_64", "_128"};
+            for (String r : resolutions) {
+                URL url = getClass().getResource("images/" + iconName + r + ".png");
+                if (url != null) {
+                    icons.add(new ImageIcon(url).getImage());
+                }
+            }
+            frame.setIconImages(icons);
+        }
+        catch (Exception e)
+        {
+            // setting a list of icon images didn't work, so try with just one image instead
+            try {
+                URL url = getClass().getResource("images/" + iconName + "_64.png");
+                if (url != null) {
+                    frame.setIconImage(new ImageIcon(url).getImage());
+                }
+            }
+            catch (Exception e2) {
+                System.err.println("Failed to set frame's icon image: " + e2.getMessage());
+            }
+        }
     }
 
     public void setLanguage(String languageCode) {

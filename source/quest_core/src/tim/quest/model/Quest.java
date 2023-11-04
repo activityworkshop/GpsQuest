@@ -7,7 +7,6 @@ public class Quest {
     private String name;
     private String author;
     private final HashMap<String, String> descriptions = new HashMap<>();
-    private final HashSet<String> languages = new HashSet<>();
 
     private final VariableMap variables = new VariableMap();
     private final HashMap<String, Timer> timers = new HashMap<>();
@@ -36,11 +35,16 @@ public class Quest {
 
     public void addDescription(String language, String description) {
         descriptions.put(language, description);
-        languages.add(language);
     }
 
     public HashMap<String, String> getDescriptions() {
         return descriptions;
+    }
+
+    public List<String> getLanguages() {
+        ArrayList<String> languages = new ArrayList<>(descriptions.keySet());
+        Collections.sort(languages);
+        return languages;
     }
 
     public int getNumVariables() {

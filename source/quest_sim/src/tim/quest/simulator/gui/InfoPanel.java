@@ -9,17 +9,19 @@ import javax.swing.*;
 public class InfoPanel extends JPanel implements LanguageAware {
     private Quest quest = null;
     private final JLabel topLabel;
-    private final JLabel questNameLabel;
-    private final JLabel questDescriptionLabel;
+    private final JLabel nameLabel;
+    private final JLabel descriptionLabel;
+    private final JLabel languagesLabel;
 
     public InfoPanel(I18nTexts texts) {
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         topLabel = new JLabel(texts.getText("infopanel.title"));
         GuiTricks.makeFontBigger(topLabel);
-        questNameLabel = new JLabel(texts.getText("infopanel.name"));
-        questDescriptionLabel = new JLabel(texts.getText("infopanel.description"));
-        for (JLabel label : new JLabel[] {topLabel, questNameLabel, questDescriptionLabel}) {
+        nameLabel = new JLabel(texts.getText("infopanel.name"));
+        descriptionLabel = new JLabel(texts.getText("infopanel.description"));
+        languagesLabel = new JLabel(texts.getText("infopanel.languages"));
+        for (JLabel label : new JLabel[] {topLabel, nameLabel, languagesLabel, descriptionLabel}) {
             add(label);
         }
         setLanguage(texts);
@@ -28,16 +30,32 @@ public class InfoPanel extends JPanel implements LanguageAware {
     public void setLanguage(I18nTexts texts) {
         topLabel.setText(texts.getText("infopanel.title"));
         if (quest == null) {
-            questNameLabel.setText(texts.getText("infopanel.noquestloaded"));
-            questNameLabel.setEnabled(false);
-            questDescriptionLabel.setVisible(false);
+            nameLabel.setText(texts.getText("infopanel.noquestloaded"));
+            nameLabel.setEnabled(false);
+            languagesLabel.setVisible(false);
+            descriptionLabel.setVisible(false);
         }
         else {
-            questNameLabel.setText(texts.getText("infopanel.name") + ": " + quest.getName());
-            questNameLabel.setEnabled(true);
-            questDescriptionLabel.setText(texts.getText("infopanel.description") + ": " + getQuestDescription(texts));
-            questDescriptionLabel.setVisible(true);
+            nameLabel.setText(texts.getText("infopanel.name") + ": " + quest.getName());
+            nameLabel.setEnabled(true);
+            languagesLabel.setText(texts.getText("infopanel.languages") + ": " + getQuestLanguages(texts));
+            languagesLabel.setVisible(true);
+            descriptionLabel.setText(texts.getText("infopanel.description") + ": " + getQuestDescription(texts));
+            descriptionLabel.setVisible(true);
         }
+    }
+
+    private String getQuestLanguages(I18nTexts texts) {
+        StringBuilder result = new StringBuilder();
+        for (String desc : quest.getLanguages()) {
+            if (desc != null && !desc.equals("")) {
+                if (result.length() > 0) {
+                    result.append(", ");
+                }
+                result.append(desc);
+            }
+        }
+        return result.length() == 0 ? texts.getText("infopanel.languages.none") : result.toString();
     }
 
     private String getQuestDescription(I18nTexts texts) {
