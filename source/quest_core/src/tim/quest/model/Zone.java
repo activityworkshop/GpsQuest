@@ -1,6 +1,7 @@
 package tim.quest.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Zone extends QuestObject {
     private boolean visible = true;
@@ -44,6 +45,10 @@ public abstract class Zone extends QuestObject {
         return enterTriggers.size();
     }
 
+    public List<Trigger> getEnterTriggers() {
+        return enterTriggers;
+    }
+
     public void addExitTrigger(Trigger trigger) {
         if (trigger != null) {
             exitTriggers.add(trigger);
@@ -52,5 +57,9 @@ public abstract class Zone extends QuestObject {
 
     public int getNumExitTriggers() {
         return exitTriggers.size();
+    }
+
+    public List<Trigger> getExitTriggers() {
+        return exitTriggers;
     }
 }

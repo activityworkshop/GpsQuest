@@ -4,6 +4,8 @@ import tim.quest.Findings;
 import tim.quest.load.QuestFileException;
 import tim.quest.load.QuestLoader;
 import tim.quest.model.Quest;
+import tim.quest.model.Trigger;
+import tim.quest.model.Zone;
 import tim.quest.simulator.I18nTexts;
 import tim.quest.simulator.LanguageAware;
 import tim.quest.simulator.WindowController;
@@ -159,10 +161,29 @@ public class MainWindow implements WindowController {
 
     public void enterZone(String zoneId) {
         logPanel.log("Entered the zone '" + zoneId + "'");
+        Zone zone = quest.getZone(zoneId);
+        if (zone != null) {
+            testTriggers(zone.getEnterTriggers());
+        }
     }
 
     public void exitZone(String zoneId) {
         logPanel.log("Exited the zone '" + zoneId + "'");
+        Zone zone = quest.getZone(zoneId);
+        if (zone != null) {
+            testTriggers(zone.getExitTriggers());
+        }
+    }
+
+    private void testTriggers(java.util.List<Trigger> triggers) {
+        for (Trigger trigger : triggers) {
+            if (trigger.allConditionsMatch()) {
+                logPanel.log("Trigger '" + trigger.getId() + "' fired");
+            }
+            else {
+                logPanel.log("Conditions not met for trigger '" + trigger.getId() + "'");
+            }
+        }
     }
 
     public void selectQuestLanguage() {

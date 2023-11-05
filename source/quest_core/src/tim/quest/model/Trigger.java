@@ -59,7 +59,7 @@ public class Trigger extends QuestObject implements TriggerInterface {
         return conditions;
     }
 
-    boolean allConditionsMatch() {
+    public boolean allConditionsMatch() {
         for (Condition condition : conditions) {
             String variableName = condition.getVariableName();
             String value = variables.getValue(variableName);

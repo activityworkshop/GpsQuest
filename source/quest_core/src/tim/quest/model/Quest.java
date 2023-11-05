@@ -187,6 +187,15 @@ public class Quest {
         return zones.stream().map(Zone::getId).sorted().collect(Collectors.toList());
     }
 
+    public Zone getZone(String zoneId) {
+        for (Zone zone : zones) {
+            if (zone.getId().equals(zoneId)) {
+                return zone;
+            }
+        }
+        return null;
+    }
+
     // State
     public void selectLanguage(String language) {
         selectedLanguage = language;

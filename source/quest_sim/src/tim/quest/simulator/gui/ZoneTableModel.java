@@ -41,7 +41,6 @@ public class ZoneTableModel extends AbstractTableModel implements LanguageAware 
         if (zoneNames.isEmpty()) {
             zoneNames.addAll(quest.getZoneNames());
         }
-        String zoneName = zoneNames.get(row);
         return col == 0 ? getZoneName(row) : "";
     }
 

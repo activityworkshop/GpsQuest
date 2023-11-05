@@ -6,6 +6,8 @@ import tim.quest.simulator.WindowController;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class LanguageDialog {
     private final WindowController controller;
@@ -14,7 +16,7 @@ public class LanguageDialog {
     private final I18nTexts texts;
     private final JDialog dialog;
     private java.util.List<String> languages;
-    private JList listbox;
+    private JList<String> listbox;
 
 
     public LanguageDialog(WindowController controller, Quest quest, JFrame parentFrame, I18nTexts texts) {
@@ -41,8 +43,17 @@ public class LanguageDialog {
         mainPanel.setLayout(new BorderLayout(5, 5));
         mainPanel.add(new JLabel(texts.getText("dialog.selectlanguage.intro")), BorderLayout.NORTH);
         languages = quest.getLanguages();
-        // TODO: JList inside a scrollpane
-        listbox = new JList(languages.toArray(new String[0]));
+        // JList inside a scrollpane
+        listbox = new JList<>(languages.toArray(new String[0]));
+        listbox.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (e.getClickCount() > 1) {
+                    finish();
+                }
+            }
+        });
         mainPanel.add(new JScrollPane(listbox), BorderLayout.CENTER);
         // Buttons at the bottom
         JPanel buttonPanel = new JPanel();
