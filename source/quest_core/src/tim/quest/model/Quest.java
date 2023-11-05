@@ -15,6 +15,9 @@ public class Quest {
     private final HashMap<String, Scene> scenes = new HashMap<>();
     private final ArrayList<String> resourcePaths = new ArrayList<>();
     private Scene startScene = null;
+    // Note: the members above are loaded from the Quest file and contain the definition of the Quest.
+    // The ones below hold the current state of the running Quest, and so maybe belong in a separate class?
+    private String selectedLanguage = null;
 
 
     public void setName(String name) {
@@ -39,6 +42,31 @@ public class Quest {
 
     public HashMap<String, String> getDescriptions() {
         return descriptions;
+    }
+
+    public String getDescription() {
+        if (descriptions.isEmpty()) {
+            return null;
+        }
+        if (descriptions.size() == 1) {
+            // Only one description provided, so return that one
+            for (String value : descriptions.values()) {
+                if (value != null && !value.isEmpty()) {
+                    return value;
+                }
+            }
+        }
+        if (descriptions.containsKey(selectedLanguage)) {
+            return descriptions.get(selectedLanguage);
+        }
+        if (descriptions.containsKey("")) {
+            return descriptions.get("");
+        }
+        return null;
+    }
+
+    public int getNumLanguages() {
+        return descriptions.size();
     }
 
     public List<String> getLanguages() {
@@ -88,6 +116,7 @@ public class Quest {
     }
 
     public Scene getScene(String id) {
+        // TODO: Give the current selectedLanguage to the Scene object
         return scenes.get(id);
     }
 
@@ -156,5 +185,14 @@ public class Quest {
 
     public Collection<String> getZoneNames() {
         return zones.stream().map(Zone::getId).sorted().collect(Collectors.toList());
+    }
+
+    // State
+    public void selectLanguage(String language) {
+        selectedLanguage = language;
+    }
+
+    public String getSelectedLanguage() {
+        return selectedLanguage == null ? "" : selectedLanguage;
     }
 }

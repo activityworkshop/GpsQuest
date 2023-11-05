@@ -44,7 +44,7 @@ public class MenuManager implements LanguageAware {
         changeLanguage.add(makeMenuItem(i18n, "menu.simulator.simulatorlanguage.english", e -> parent.setLanguage("en")));
         changeLanguage.add(makeMenuItem(i18n, "menu.simulator.simulatorlanguage.german", e -> parent.setLanguage("de")));
         simulatorMenu.add(changeLanguage);
-        simulatorMenu.add(makeMenuItem(i18n, "menu.simulator.questlanguage", e -> {}, loadedQuest));
+        simulatorMenu.add(makeMenuItem(i18n, "menu.simulator.questlanguage", e -> parent.selectQuestLanguage(), loadedQuest));
         simulatorMenu.add(makeMenuItem(i18n, "menu.simulator.clearlog", e -> parent.clearLogPanel()));
         menuBar.add(simulatorMenu);
 

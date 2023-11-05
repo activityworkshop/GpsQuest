@@ -49,4 +49,19 @@ public class I18nTexts {
     public String getText(String key) {
         return localTexts.getProperty(key, key);
     }
+
+    /** @return text formatted with the given string parameter */
+    public String getTextWithString(String key, String param)
+    {
+        String localText = getText(key);
+        try {
+            localText = String.format(localText, param);
+        }
+        catch (Exception e) {
+            // printf formatting didn't work, maybe the placeholders are wrong?
+            System.err.println("String formatting for key '" + key + "' with parameter '" + param
+                    + "' threw exception: " + e.getMessage());
+        }
+        return localText;
+    }
 }

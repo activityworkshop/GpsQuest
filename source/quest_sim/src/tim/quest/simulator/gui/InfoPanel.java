@@ -59,11 +59,9 @@ public class InfoPanel extends JPanel implements LanguageAware {
     }
 
     private String getQuestDescription(I18nTexts texts) {
-        // TODO: Use the currently selected quest language
-        for (String desc : quest.getDescriptions().values()) {
-            if (desc != null && !desc.equals("")) {
-                return desc;
-            }
+        String desc = quest.getDescription();
+        if (desc != null && !desc.equals("")) {
+            return desc;
         }
         return texts.getText("infopanel.description.none");
     }

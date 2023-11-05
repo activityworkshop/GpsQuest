@@ -12,4 +12,9 @@ public interface WindowController {
 
     void enterZone(String zoneId);
     void exitZone(String zoneId);
+
+    /** Offer the selection list to choose language */
+    void selectQuestLanguage();
+    /** Finish the selection */
+    void selectQuestLanguage(String language);
 }

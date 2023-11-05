@@ -28,6 +28,7 @@ public class MainWindow implements WindowController {
     private VariablesPanel variablesPanel = null;
     private ZonesPanel zonesPanel = null;
     private JFileChooser fileChooser = null;
+    private Quest quest = null;
 
 
     public void launch(String language) {
@@ -124,11 +125,14 @@ public class MainWindow implements WindowController {
             fileChooser.setMultiSelectionEnabled(false);
         }
         // Show the open dialog
-		if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
             try {
                 Findings findings = new Findings();
-                Quest quest = QuestLoader.fromFile(fileChooser.getSelectedFile(), findings);
+                quest = QuestLoader.fromFile(fileChooser.getSelectedFile(), findings);
                 logPanel.log("Opened the Quest file '" + fileChooser.getSelectedFile().getAbsolutePath() + "'");
+                if (quest != null && quest.getNumLanguages() > 1) {
+                    new LanguageDialog(this, quest, frame, i18n).show();
+                }
                 infoPanel.setQuest(quest);
                 variablesPanel.setQuest(quest);
                 zonesPanel.setQuest(quest);
@@ -159,5 +163,16 @@ public class MainWindow implements WindowController {
 
     public void exitZone(String zoneId) {
         logPanel.log("Exited the zone '" + zoneId + "'");
+    }
+
+    public void selectQuestLanguage() {
+        new LanguageDialog(this, quest, frame, i18n).show();
+    }
+
+    public void selectQuestLanguage(String language) {
+        logPanel.log("Changed the Quest language to '" + language + "'");
+        quest.selectLanguage(language);
+        // Info panel needs to be informed so that it can show the correct description
+        infoPanel.setLanguage(i18n);
     }
 }
