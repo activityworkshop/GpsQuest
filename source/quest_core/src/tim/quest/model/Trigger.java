@@ -1,5 +1,7 @@
 package tim.quest.model;
 
+import tim.quest.QuestController;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,7 @@ public class Trigger extends QuestObject implements TriggerInterface {
     private final ArrayList<Timer> timers = new ArrayList<>();
     private VariableMap variables = null;
     private final VariableModMap varModMap = new VariableModMap();
+    private QuestController controller = null;
 
 
     public Trigger(String triggerId) {
@@ -31,10 +34,6 @@ public class Trigger extends QuestObject implements TriggerInterface {
 
     public void setScene(Scene scene) {
         this.scene = scene;
-    }
-
-    public Scene getScene() {
-        return scene;
     }
 
     public void addTimer(Timer timer) {
@@ -70,17 +69,19 @@ public class Trigger extends QuestObject implements TriggerInterface {
         return true;
     }
 
-    public void fire() {
+    public boolean fire() {
         if (allConditionsMatch()) {
             for (Timer timer : timers) {
                 timer.start();
             }
             // update all variables
             varModMap.apply(variables);
-            if (scene != null) {
-                // TODO: Somehow activate scene?  Via injected interface?
+            if (scene != null && controller != null) {
+                controller.activateScene(scene);
             }
+            return true;
         }
+        return false;
     }
 
     public void setVariables(VariableMap variables) {
@@ -91,8 +92,11 @@ public class Trigger extends QuestObject implements TriggerInterface {
         varModMap.addAction(varName, operator, varValue);
     }
 
-
     public VariableModMap getVariableModMap() {
         return varModMap;
+    }
+
+    public void setController(QuestController controller) {
+        this.controller = controller;
     }
 }

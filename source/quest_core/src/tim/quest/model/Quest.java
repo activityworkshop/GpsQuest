@@ -1,5 +1,7 @@
 package tim.quest.model;
 
+import tim.quest.QuestController;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -194,6 +196,12 @@ public class Quest {
             }
         }
         return null;
+    }
+
+    public void setController(QuestController controller) {
+        for (Trigger trigger : getTriggers()) {
+            trigger.setController(controller);
+        }
     }
 
     // State

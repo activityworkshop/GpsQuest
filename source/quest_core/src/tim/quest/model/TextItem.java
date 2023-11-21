@@ -6,4 +6,8 @@ public class TextItem extends SceneObject {
     public TextItem(String text) {
         this.text = text;
     }
+
+    public String toString() {
+        return text;
+    }
 }

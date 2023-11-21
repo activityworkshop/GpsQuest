@@ -14,7 +14,7 @@ class TimerTest {
     public void testSingleOneSecondFire() {
         Target target = new Target();
         Timer timer = new Timer("timer1", 1, "", false);
-        timer.addTrigger(() -> target.numFires++);
+        timer.addTrigger(() -> {target.numFires++; return true;});
         Assertions.assertEquals(0, target.numFires);
 
         // Start timer and wait for 3 secs
@@ -27,7 +27,7 @@ class TimerTest {
     public void testMultipleTimerStarts() {
         Target target = new Target();
         Timer timer = new Timer("timer1", 1, "", false);
-        timer.addTrigger(() -> target.numFires++);
+        timer.addTrigger(() -> {target.numFires++; return true;});
         Assertions.assertEquals(0, target.numFires);
 
         // Start timer several times and wait for 3 secs
@@ -42,7 +42,7 @@ class TimerTest {
     public void testMultipleTimerStartsConsecutive() {
         Target target = new Target();
         Timer timer = new Timer("timer1", 1, "", false);
-        timer.addTrigger(() -> target.numFires++);
+        timer.addTrigger(() -> {target.numFires++; return true;});
         Assertions.assertEquals(0, target.numFires);
 
         // Start timer several times and wait between each one
@@ -57,7 +57,7 @@ class TimerTest {
     public void testRepeatingTimer() {
         Target target = new Target();
         Timer timer = new Timer("timer1", 1, "", true);
-        timer.addTrigger(() -> target.numFires++);
+        timer.addTrigger(() -> {target.numFires++; return true;});
         Assertions.assertEquals(0, target.numFires);
 
         // Start timer and wait

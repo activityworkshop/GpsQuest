@@ -1,6 +1,8 @@
 package tim.quest.simulator;
 
-public interface WindowController {
+import tim.quest.QuestController;
+
+public interface WindowController extends QuestController {
 
     void setLanguage(String languageCode);
 

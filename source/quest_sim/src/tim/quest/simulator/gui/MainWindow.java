@@ -3,9 +3,7 @@ package tim.quest.simulator.gui;
 import tim.quest.Findings;
 import tim.quest.load.QuestFileException;
 import tim.quest.load.QuestLoader;
-import tim.quest.model.Quest;
-import tim.quest.model.Trigger;
-import tim.quest.model.Zone;
+import tim.quest.model.*;
 import tim.quest.simulator.I18nTexts;
 import tim.quest.simulator.LanguageAware;
 import tim.quest.simulator.WindowController;
@@ -131,6 +129,9 @@ public class MainWindow implements WindowController {
             try {
                 Findings findings = new Findings();
                 quest = QuestLoader.fromFile(fileChooser.getSelectedFile(), findings);
+                if (quest != null) {
+                    quest.setController(this);
+                }
                 logPanel.log("Opened the Quest file '" + fileChooser.getSelectedFile().getAbsolutePath() + "'");
                 if (quest != null && quest.getNumLanguages() > 1) {
                     new LanguageDialog(this, quest, frame, i18n).show();
@@ -177,11 +178,8 @@ public class MainWindow implements WindowController {
 
     private void testTriggers(java.util.List<Trigger> triggers) {
         for (Trigger trigger : triggers) {
-            if (trigger.allConditionsMatch()) {
+            if (trigger.fire()) {
                 logPanel.log("Trigger '" + trigger.getId() + "' fired");
-            }
-            else {
-                logPanel.log("Conditions not met for trigger '" + trigger.getId() + "'");
             }
         }
     }
@@ -195,5 +193,14 @@ public class MainWindow implements WindowController {
         quest.selectLanguage(language);
         // Info panel needs to be informed so that it can show the correct description
         infoPanel.setLanguage(i18n);
+    }
+
+    @Override
+    public void activateScene(Scene scene) {
+        logPanel.log("Activate scene: '" + scene.getId() + "'");
+        // TODO: Add this scene to a queue to be processed in the order they were triggered
+        for (SceneObject obj : scene.getContent(quest.getSelectedLanguage())) {
+            logPanel.log("   " + obj.toString());
+        }
     }
 }

@@ -60,7 +60,7 @@ public class TriggerTest {
         Timer timer = new Timer("timer", 1, "", false);
         trigger.addTimer(timer);
         Target target = new Target();
-        timer.addTrigger(() -> target.numFires++);
+        timer.addTrigger(() -> {target.numFires++; return true;});
         Assertions.assertEquals(0, target.numFires);
 
         // Fire trigger, this should start the timer
